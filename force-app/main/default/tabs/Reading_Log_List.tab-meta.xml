@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>自分の読書記録一覧</description>
+    <label>記録一覧</label>
+    <lwcComponent>readingLogList</lwcComponent>
+    <motif>Custom15:Check</motif>
+</CustomTab>

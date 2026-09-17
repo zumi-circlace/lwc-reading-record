@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>My_Reading_Logs</fullName>
+    <columns>NAME</columns>
+    <columns>DisplayName__c</columns>
+    <columns>Book__c</columns>
+    <columns>ReadDate__c</columns>
+    <filterScope>Mine</filterScope>
+    <label>自分の読書記録</label>
+</ListView>

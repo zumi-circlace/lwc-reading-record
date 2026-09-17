@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>外部APIのキー。リポジトリには空の値だけを置く。</description>
+    <label>API設定</label>
+    <pluralLabel>API設定</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ISBN__c</fullName>
+    <caseSensitive>false</caseSensitive>
+    <description>ISBN-13（ハイフンなし）。find-or-create の外部ID。</description>
+    <externalId>true</externalId>
+    <label>ISBN</label>
+    <length>13</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

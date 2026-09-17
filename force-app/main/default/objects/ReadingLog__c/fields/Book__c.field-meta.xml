@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Book__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <description>書誌マスタへの参照。</description>
+    <label>本</label>
+    <referenceTo>Book__c</referenceTo>
+    <relationshipLabel>読書記録</relationshipLabel>
+    <relationshipName>Reading_Logs</relationshipName>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>カメラ・検索・手打ちで読書を記録する</description>
+    <label>読書を記録</label>
+    <lwcComponent>readingLogEntry</lwcComponent>
+    <motif>Custom16:Pen</motif>
+</CustomTab>

@@ -1,0 +1,28 @@
+{
+  "records": [
+    {
+      "attributes": {
+        "type": "Book__c",
+        "referenceId": "BookRef1"
+      },
+      "Title__c": "サンプル技術書",
+      "ISBN__c": "9780306406157",
+      "Author__c": "Sample Author",
+      "Publisher__c": "Sample Press",
+      "PublishedYear__c": "2020",
+      "Category__c": "技術書",
+      "Reading_Logs__r": {
+        "records": [
+          {
+            "attributes": {
+              "type": "ReadingLog__c",
+              "referenceId": "LogRef1"
+            },
+            "ReadDate__c": "2026-01-15",
+            "Description__c": "サンプルの初読メモ"
+          }
+        ]
+      }
+    }
+  ]
+}

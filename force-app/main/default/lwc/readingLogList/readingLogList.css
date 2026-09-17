@@ -1,0 +1,15 @@
+.cover {
+    width: 56px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 0.15rem;
+    background: #f3f3f3;
+}
+
+.cover_empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: #706e6b;
+}

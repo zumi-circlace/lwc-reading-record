@@ -1,0 +1,63 @@
+<template>
+    <lightning-card title="自分の読書記録" icon-name="custom:custom17">
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <div class="slds-grid slds-gutters slds-m-bottom_small">
+                <div class="slds-col slds-grow">
+                    <lightning-input
+                        type="search"
+                        label="タイトルで絞り込み"
+                        value={keyword}
+                        onchange={handleKeywordChange}
+                    ></lightning-input>
+                </div>
+                <div class="slds-col slds-grow-none slds-m-top_large">
+                    <lightning-button variant="brand" label="検索" onclick={handleSearch}></lightning-button>
+                </div>
+            </div>
+
+            <template lwc:if={isLoading}>
+                <lightning-spinner alternative-text="読み込み中" size="small"></lightning-spinner>
+            </template>
+            <template lwc:if={isEmpty}>
+                <p>記録はまだありません。「読書を記録」タブから追加してください。</p>
+            </template>
+
+            <template for:each={logs} for:item="log">
+                <article key={log.logId} class="slds-box slds-m-bottom_small">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <template lwc:if={log.hasCover}>
+                                <img src={log.coverUrl} alt={log.title} class="cover" />
+                            </template>
+                            <template lwc:else>
+                                <div class="cover cover_empty">表紙なし</div>
+                            </template>
+                        </div>
+                        <div class="slds-media__body">
+                            <h3 class="slds-text-heading_small">
+                                <a href="#" data-id={log.logId} onclick={handleOpen}>{log.title}</a>
+                            </h3>
+                            <p class="slds-text-body_small">{log.author}</p>
+                            <p class="slds-text-body_small">読了日: {log.readDate} / {log.category}</p>
+                            <p class="slds-text-body_small slds-m-top_x-small">{log.description}</p>
+                            <div class="slds-m-top_small">
+                                <lightning-button
+                                    label="編集"
+                                    data-id={log.logId}
+                                    onclick={handleEdit}
+                                ></lightning-button>
+                                <lightning-button
+                                    class="slds-m-left_x-small"
+                                    label="削除"
+                                    variant="destructive-text"
+                                    data-id={log.logId}
+                                    onclick={handleDelete}
+                                ></lightning-button>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </template>
+        </div>
+    </lightning-card>
+</template>

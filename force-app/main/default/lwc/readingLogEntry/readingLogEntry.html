@@ -1,0 +1,31 @@
+<template>
+    <lightning-card title="読書を記録" icon-name="custom:custom62">
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <template lwc:if={showConfirm}>
+                <c-reading-log-confirm
+                    book={selectedBook}
+                    existing-logs={existingLogs}
+                    oncancel={handleConfirmCancel}
+                    onsaved={handleSaved}
+                ></c-reading-log-confirm>
+            </template>
+            <template lwc:else>
+                <lightning-tabset active-tab-value={activeTab} onactive={handleTabActive}>
+                    <lightning-tab label="カメラ" value="camera">
+                        <c-barcode-scanner-tab onisbnscanned={handleIsbnScanned}></c-barcode-scanner-tab>
+                    </lightning-tab>
+                    <lightning-tab label="検索" value="search">
+                        <c-book-search
+                            reset-key={searchResetKey}
+                            onbookselected={handleBookSelected}
+                            onneedmanual={handleNeedManual}
+                        ></c-book-search>
+                    </lightning-tab>
+                    <lightning-tab label="完全手打ち" value="manual">
+                        <c-manual-book-form oncontinue={handleManualContinue}></c-manual-book-form>
+                    </lightning-tab>
+                </lightning-tabset>
+            </template>
+        </div>
+    </lightning-card>
+</template>

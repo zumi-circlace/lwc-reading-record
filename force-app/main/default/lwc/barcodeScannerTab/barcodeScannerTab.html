@@ -1,0 +1,22 @@
+<template>
+    <div class="slds-m-top_small">
+        <template lwc:if={scannerAvailable}>
+            <p class="slds-text-body_small slds-m-bottom_small">
+                Salesforce モバイルアプリで、本のバーコード（ISBN）を読み取ります。
+            </p>
+            <lightning-button
+                variant="brand"
+                label="バーコードをスキャン"
+                icon-name="utility:scan"
+                onclick={handleScan}
+                disabled={scanning}
+            ></lightning-button>
+        </template>
+        <template lwc:else>
+            <div class="slds-box slds-theme_alert-texture">
+                <p>バーコード読み取りは Salesforce モバイルアプリでのみ使えます。</p>
+                <p class="slds-m-top_x-small">PC からは「検索」タブで ISBN を入力してください。</p>
+            </div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,31 @@
+<template>
+    <ul class="slds-m-top_medium result-list">
+        <template for:each={items} for:item="book" for:index="index">
+            <li key={book.key} class="slds-m-bottom_small">
+                <button
+                    class="result-card slds-box slds-box_small slds-theme_default"
+                    type="button"
+                    data-index={index}
+                    onclick={handleSelect}
+                >
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <template lwc:if={book.coverUrl}>
+                                <img src={book.coverUrl} alt={book.title} class="cover" />
+                            </template>
+                            <template lwc:else>
+                                <div class="cover cover_empty">表紙なし</div>
+                            </template>
+                        </div>
+                        <div class="slds-media__body slds-text-align_left">
+                            <p class="slds-text-heading_small">{book.title}</p>
+                            <p class="slds-text-body_small">{book.author}</p>
+                            <p class="slds-text-body_small">{book.publisher} {book.publishedYear}</p>
+                            <p class="slds-text-body_small">ISBN: {book.isbn}</p>
+                        </div>
+                    </div>
+                </button>
+            </li>
+        </template>
+    </ul>
+</template>

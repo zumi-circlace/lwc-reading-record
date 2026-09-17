@@ -1,0 +1,38 @@
+<template>
+    <div class="slds-m-top_small">
+        <p class="slds-text-body_small slds-m-bottom_small">
+            API に無い同人誌や古い本は、ここで書誌を入力します。
+        </p>
+        <lightning-input
+            data-field="title"
+            label="タイトル"
+            value={title}
+            required
+            onchange={handleChange}
+        ></lightning-input>
+        <lightning-input data-field="isbn" label="ISBN" value={isbn} onchange={handleChange}></lightning-input>
+        <lightning-input data-field="author" label="著者" value={author} onchange={handleChange}></lightning-input>
+        <lightning-input
+            data-field="publisher"
+            label="出版社"
+            value={publisher}
+            onchange={handleChange}
+        ></lightning-input>
+        <lightning-input
+            data-field="publishedYear"
+            label="出版年"
+            value={publishedYear}
+            onchange={handleChange}
+        ></lightning-input>
+        <lightning-combobox
+            data-field="category"
+            label="カテゴリ"
+            value={category}
+            options={categoryOptions}
+            onchange={handleChange}
+        ></lightning-combobox>
+        <div class="slds-m-top_medium">
+            <lightning-button variant="brand" label="確認画面へ" onclick={handleContinue}></lightning-button>
+        </div>
+    </div>
+</template>

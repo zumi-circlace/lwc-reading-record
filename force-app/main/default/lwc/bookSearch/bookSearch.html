@@ -1,0 +1,43 @@
+<template>
+    <div class="slds-m-top_small">
+        <p class="slds-text-body_small slds-m-bottom_small">
+            ISBN（数字）なら openBD、タイトルなら Google Books で候補を出します。
+        </p>
+        <lightning-input
+            type="search"
+            label="ISBN またはタイトル"
+            value={query}
+            placeholder="9784... または 本のタイトル"
+            onchange={handleQueryChange}
+            onkeydown={handleKeydown}
+        ></lightning-input>
+        <div class="slds-m-top_small">
+            <lightning-button
+                variant="brand"
+                label="検索"
+                onclick={handleSearch}
+                disabled={isLoading}
+            ></lightning-button>
+        </div>
+
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="検索中" size="small"></lightning-spinner>
+        </template>
+        <template lwc:if={errorMessage}>
+            <div class="slds-text-color_error slds-m-top_small">{errorMessage}</div>
+        </template>
+        <template lwc:if={hasResults}>
+            <c-book-search-results results={results} onselect={handleSelect}></c-book-search-results>
+        </template>
+        <template lwc:if={noResults}>
+            <div class="slds-m-top_medium">
+                <p>該当する本が見つかりませんでした。</p>
+                <lightning-button
+                    class="slds-m-top_small"
+                    label="完全手打ちで登録する"
+                    onclick={handleManual}
+                ></lightning-button>
+            </div>
+        </template>
+    </div>
+</template>

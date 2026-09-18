@@ -1,0 +1,14 @@
+.scan-value {
+    font-family: monospace;
+    font-size: 1.1rem;
+    word-break: break-all;
+}
+
+.scan-dump {
+    margin: 0;
+    padding: 0.5rem;
+    background: var(--lwc-colorBackgroundAlt, #f3f3f3);
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-size: 0.75rem;
+}

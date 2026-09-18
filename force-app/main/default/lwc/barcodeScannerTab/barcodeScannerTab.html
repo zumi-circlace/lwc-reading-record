@@ -1,21 +1,50 @@
 <template>
     <div class="slds-m-top_small">
+        <p class="slds-text-body_small slds-m-bottom_small">
+                本の裏はだいたい2本あります。上段（978 / 979 始まり）が ISBN、下段（191 / 192 始まり）は日本の価格コードです。スキャンラインを上段に合わせてください。
+        </p>
         <template lwc:if={scannerAvailable}>
-            <p class="slds-text-body_small slds-m-bottom_small">
-                Salesforce モバイルアプリで、本のバーコード（ISBN）を読み取ります。
-            </p>
             <lightning-button
                 variant="brand"
-                label="バーコードをスキャン"
+                label="上段をスキャン"
                 icon-name="utility:scan"
                 onclick={handleScan}
                 disabled={scanning}
             ></lightning-button>
+            <template lwc:if={retryHint}>
+                <div class="slds-box slds-theme_warning slds-m-top_small">
+                    <p>{retryHint}</p>
+                </div>
+            </template>
         </template>
         <template lwc:else>
             <div class="slds-box slds-theme_alert-texture">
                 <p>バーコード読み取りは Salesforce モバイルアプリでのみ使えます。</p>
                 <p class="slds-m-top_x-small">PC からは「検索」タブで ISBN を入力してください。</p>
+            </div>
+        </template>
+
+        <template lwc:if={hasScanResult}>
+            <div class="slds-m-top_medium">
+                <p class="slds-text-title_caps slds-m-bottom_x-small">読み取り結果</p>
+                <template for:each={scannedItems} for:item="item">
+                    <div key={item.key} class="slds-box slds-m-bottom_x-small">
+                        <p class="scan-value">{item.value}</p>
+                        <p class="slds-text-body_small">type: {item.type}</p>
+                        <p class="slds-text-body_small">{item.kind}</p>
+                        <template lwc:if={item.isIsbn}>
+                            <lightning-button
+                                class="slds-m-top_x-small"
+                                variant="brand"
+                                label="この ISBN で進む"
+                                name={item.value}
+                                onclick={handleUseIsbn}
+                            ></lightning-button>
+                        </template>
+                    </div>
+                </template>
+                <p class="slds-text-title_caps slds-m-top_small slds-m-bottom_x-small">生データ</p>
+                <pre class="scan-dump">{rawDump}</pre>
             </div>
         </template>
     </div>

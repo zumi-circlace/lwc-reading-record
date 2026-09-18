@@ -3,12 +3,19 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import searchByIsbn from "@salesforce/apex/BookScannerController.searchByIsbn";
 import findMyLogsForIsbn from "@salesforce/apex/BookScannerController.findMyLogsForIsbn";
 
+const SCAN_STORAGE_KEY = "readingLog.lastBarcodeScan";
+
 export default class ReadingLogEntry extends LightningElement {
-    activeTab = "search";
+    activeTab = "camera";
     showConfirm = false;
     @track selectedBook = {};
     @track existingLogs = [];
+    @track lastScanPayload;
     searchResetKey = 0;
+
+    connectedCallback() {
+        this.restoreScanPayload();
+    }
 
     get hasExistingLogs() {
         return this.existingLogs && this.existingLogs.length > 0;
@@ -18,9 +25,41 @@ export default class ReadingLogEntry extends LightningElement {
         this.activeTab = event.target.value;
     }
 
-    async handleIsbnScanned(event) {
-        const isbn = event.detail.isbn;
-        await this.lookupIsbnAndConfirm(isbn, "カメラ");
+    handleScanResult(event) {
+        this.applyScanPayload(event.detail);
+    }
+
+    restoreScanPayload() {
+        try {
+            const raw = sessionStorage.getItem(SCAN_STORAGE_KEY);
+            if (!raw) {
+                return;
+            }
+            this.applyScanPayload(JSON.parse(raw));
+        } catch (error) {
+            sessionStorage.removeItem(SCAN_STORAGE_KEY);
+        }
+    }
+
+    applyScanPayload(payload) {
+        if (!payload) {
+            return;
+        }
+        this.lastScanPayload = payload;
+        this.activeTab = "camera";
+        const isbn = payload.isbn;
+        const firstValue = payload.items?.find((item) => item.value)?.value;
+        if (isbn) {
+            this.lookupIsbnAndConfirm(isbn, "カメラ");
+            return;
+        }
+        if (firstValue) {
+            this.toast(
+                "warning",
+                "それ下段じゃね？",
+                `読み取り: ${firstValue}。上段の 978 / 979 をスキャンしてください。`
+            );
+        }
     }
 
     async handleBookSelected(event) {
@@ -36,6 +75,7 @@ export default class ReadingLogEntry extends LightningElement {
 
     handleNeedManual() {
         this.activeTab = "manual";
+        this.clearStoredScan();
         this.toast("info", "手打ちへ", "書誌が見つかりませんでした。タイトルなどを入力してください。");
     }
 
@@ -47,7 +87,9 @@ export default class ReadingLogEntry extends LightningElement {
         this.showConfirm = false;
         this.selectedBook = {};
         this.existingLogs = [];
+        this.lastScanPayload = undefined;
         this.searchResetKey += 1;
+        this.clearStoredScan();
         this.toast("success", "保存しました", "記録一覧から確認できます。");
     }
 
@@ -76,6 +118,15 @@ export default class ReadingLogEntry extends LightningElement {
             }
         }
         this.showConfirm = true;
+        this.clearStoredScan();
+    }
+
+    clearStoredScan() {
+        try {
+            sessionStorage.removeItem(SCAN_STORAGE_KEY);
+        } catch (error) {
+            // ignore
+        }
     }
 
     toast(variant, title, message) {

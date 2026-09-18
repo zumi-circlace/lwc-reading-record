@@ -1,6 +1,9 @@
 <template>
-    <lightning-card title="読書を記録" icon-name="custom:custom62">
+    <lightning-card title="読書を記録（上段がISBN）" icon-name="custom:custom62">
         <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <div class="slds-box slds-theme_shade slds-m-bottom_small">
+                <p>本のバーコードは2本あります。上段（978 / 979）が ISBN、下段（191 / 192）は価格コードです。</p>
+            </div>
             <template lwc:if={showConfirm}>
                 <c-reading-log-confirm
                     book={selectedBook}
@@ -12,7 +15,10 @@
             <template lwc:else>
                 <lightning-tabset active-tab-value={activeTab} onactive={handleTabActive}>
                     <lightning-tab label="カメラ" value="camera">
-                        <c-barcode-scanner-tab onisbnscanned={handleIsbnScanned}></c-barcode-scanner-tab>
+                        <c-barcode-scanner-tab
+                            scan-payload={lastScanPayload}
+                            onscanresult={handleScanResult}
+                        ></c-barcode-scanner-tab>
                     </lightning-tab>
                     <lightning-tab label="検索" value="search">
                         <c-book-search

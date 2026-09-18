@@ -1,13 +1,24 @@
 /** LWC から呼ばれる入口。例外は AuraHandledException に変換する。 */
 public with sharing class BookScannerController {
-    /** ISBN なら openBD、それ以外はタイトル検索に振り分ける。 */
+    /** ISBN なら openBD、それ以外はタイトル／著者検索に振り分ける。 */
     @AuraEnabled(cacheable=false)
-    public static List<BookInfo> searchBooks(String query) {
+    public static BookSearchService.SearchPage searchBooks(
+        String query,
+        Integer startIndex,
+        String author,
+        String orderBy
+    ) {
         try {
             if (IsbnUtil.isIsbnQuery(query)) {
-                return BookSearchService.searchByIsbn(query);
+                BookSearchService.SearchPage page = new BookSearchService.SearchPage();
+                page.books = BookSearchService.searchByIsbn(query);
+                page.startIndex = 0;
+                page.paged = false;
+                page.hasNext = false;
+                page.hasPrevious = false;
+                return page;
             }
-            return BookSearchService.searchByTitle(query);
+            return BookSearchService.searchByTitle(query, startIndex, author, orderBy);
         } catch (BookSearchException e) {
             throw auraError(e.getMessage());
         } catch (Exception e) {

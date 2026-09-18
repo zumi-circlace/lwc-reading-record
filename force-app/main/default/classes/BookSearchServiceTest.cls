@@ -18,6 +18,19 @@ private class BookSearchServiceTest {
         }
     }
 
+    private class StartIndexMock implements HttpCalloutMock {
+        String lastEndpoint;
+        /** エンドポイントを記録し、1 件の Google Books JSON を返す。 */
+        public HTTPResponse respond(HTTPRequest req) {
+            lastEndpoint = req.getEndpoint();
+            HttpResponse res = new HttpResponse();
+            res.setStatusCode(200);
+            res.setBody('{"items":[{"volumeInfo":{"title":"2ページ目"}}]}');
+            res.setHeader('Content-Type', 'application/json');
+            return res;
+        }
+    }
+
     @IsTest
     /** openBD のヒット 1 件が BookInfo になることを確認する。 */
     static void searchByIsbnReturnsOpenBdHit() {
@@ -76,6 +89,25 @@ private class BookSearchServiceTest {
         System.assertEquals('9784062636940', results[0].isbn);
         System.assertEquals('https://books.google.com/cover.jpg', results[0].coverUrl);
         System.assertEquals('GoogleBooks', results[0].source);
+    }
+
+    @IsTest
+    /** startIndex・著者・並び順が Google Books のクエリに載ることを確認する。 */
+    static void searchByTitleSendsStartIndex() {
+        StartIndexMock mock = new StartIndexMock();
+        Test.setMock(HttpCalloutMock.class, mock);
+
+        Test.startTest();
+        BookSearchService.SearchPage page = BookSearchService.searchByTitle('ページング', 20, '村上', 'newest');
+        Test.stopTest();
+
+        System.assert(mock.lastEndpoint.contains('startIndex=20'), mock.lastEndpoint);
+        System.assert(mock.lastEndpoint.contains('inauthor'), mock.lastEndpoint);
+        System.assert(mock.lastEndpoint.contains('orderBy=newest'), mock.lastEndpoint);
+        System.assertEquals(true, page.paged);
+        System.assertEquals(true, page.hasPrevious);
+        System.assertEquals(20, page.startIndex);
+        System.assertEquals(false, page.hasNext);
     }
 
     @IsTest

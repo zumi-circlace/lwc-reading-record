@@ -1,7 +1,7 @@
 <template>
-    <div class="slds-m-top_small">
+    <div data-id="search-anchor" class="slds-m-top_small">
         <p class="slds-text-body_small slds-m-bottom_small">
-            ISBN（数字）なら openBD、タイトルなら Google Books で候補を出します。
+            ISBN（数字）なら openBD、タイトル／著者なら Google Books で候補を出します。
         </p>
         <lightning-input
             type="search"
@@ -11,6 +11,23 @@
             onchange={handleQueryChange}
             onkeydown={handleKeydown}
         ></lightning-input>
+        <lightning-input
+            class="slds-m-top_small"
+            type="text"
+            label="著者名"
+            value={author}
+            placeholder="任意（例: 村上春樹）"
+            onchange={handleAuthorChange}
+            onkeydown={handleKeydown}
+        ></lightning-input>
+        <lightning-combobox
+            class="slds-m-top_small"
+            name="orderBy"
+            label="並び順（タイトル検索）"
+            value={orderBy}
+            options={orderOptions}
+            onchange={handleOrderByChange}
+        ></lightning-combobox>
         <div class="slds-m-top_small">
             <lightning-button
                 variant="brand"
@@ -28,6 +45,17 @@
         </template>
         <template lwc:if={hasResults}>
             <c-book-search-results results={results} onselect={handleSelect}></c-book-search-results>
+        </template>
+        <template lwc:if={showPager}>
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-top_small">
+                <lightning-button
+                    label="前へ"
+                    onclick={handlePrevious}
+                    disabled={isPreviousDisabled}
+                ></lightning-button>
+                <span class="slds-text-body_small">{rangeLabel}</span>
+                <lightning-button label="次へ" onclick={handleNext} disabled={isNextDisabled}></lightning-button>
+            </div>
         </template>
         <template lwc:if={noResults}>
             <div class="slds-m-top_medium">

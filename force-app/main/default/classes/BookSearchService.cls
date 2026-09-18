@@ -4,7 +4,16 @@
  */
 public inherited sharing class BookSearchService {
     private static final Integer TIMEOUT_MS = 12000;
-    private static final Integer TITLE_LIMIT = 10;
+    private static final Integer TITLE_LIMIT = 20;
+
+    /** タイトル検索の 1 ページ分。 */
+    public class SearchPage {
+        @AuraEnabled public List<BookInfo> books { get; set; }
+        @AuraEnabled public Integer startIndex { get; set; }
+        @AuraEnabled public Boolean hasNext { get; set; }
+        @AuraEnabled public Boolean hasPrevious { get; set; }
+        @AuraEnabled public Boolean paged { get; set; }
+    }
 
     /** ISBN を正規化し、openBD で書誌を 0〜1 件取得する。 */
     public static List<BookInfo> searchByIsbn(String rawIsbn) {
@@ -22,17 +31,36 @@ public inherited sharing class BookSearchService {
         return parseOpenBd(res.getBody());
     }
 
-    /** タイトルで Google Books を検索し、最大 10 件返す。 */
+    /** タイトルで Google Books を検索し、1 ページ分返す。 */
     public static List<BookInfo> searchByTitle(String title) {
-        if (String.isBlank(title)) {
-            throw new BookSearchException('タイトルを入力してください。');
+        return searchByTitle(title, 0, null, null).books;
+    }
+
+    /** タイトルで Google Books を検索し、startIndex から最大 TITLE_LIMIT 件返す。 */
+    public static SearchPage searchByTitle(String title, Integer startIndex) {
+        return searchByTitle(title, startIndex, null, null);
+    }
+
+    /**
+     * タイトル／著者で Google Books を検索する。
+     * orderBy は relevance（関連度、既定）か newest（新しい順）のみ。
+     */
+    public static SearchPage searchByTitle(String title, Integer startIndex, String author, String orderBy) {
+        if (String.isBlank(title) && String.isBlank(author)) {
+            throw new BookSearchException('タイトルまたは著者名を入力してください。');
         }
+        Integer start = startIndex == null || startIndex < 0 ? 0 : startIndex;
+        String sortOrder = 'newest'.equals(orderBy) ? 'newest' : 'relevance';
 
         String endpoint =
             'callout:GoogleBooks/books/v1/volumes?q=' +
-            EncodingUtil.urlEncode(title.trim(), 'UTF-8') +
+            EncodingUtil.urlEncode(buildTitleQuery(title, author), 'UTF-8') +
+            '&startIndex=' +
+            start +
             '&maxResults=' +
             TITLE_LIMIT +
+            '&orderBy=' +
+            sortOrder +
             '&printType=books';
         String apiKey = googleBooksApiKey();
         if (String.isNotBlank(apiKey)) {
@@ -45,7 +73,26 @@ public inherited sharing class BookSearchService {
         req.setEndpoint(endpoint);
 
         HttpResponse res = send(req);
-        return parseGoogleBooks(res.getBody());
+        List<BookInfo> books = parseGoogleBooks(res.getBody());
+        SearchPage page = new SearchPage();
+        page.books = books;
+        page.startIndex = start;
+        page.paged = true;
+        page.hasPrevious = start > 0;
+        page.hasNext = books.size() >= TITLE_LIMIT;
+        return page;
+    }
+
+    /** タイトルと inauthor: を組み合わせた q を作る。 */
+    private static String buildTitleQuery(String title, String author) {
+        List<String> parts = new List<String>();
+        if (String.isNotBlank(title)) {
+            parts.add(title.trim());
+        }
+        if (String.isNotBlank(author)) {
+            parts.add('inauthor:' + author.trim());
+        }
+        return String.join(parts, ' ');
     }
 
     /** HTTP を送り、通信失敗や 2xx 以外は BookSearchException にする。 */

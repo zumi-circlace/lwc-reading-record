@@ -26,13 +26,25 @@ private class BookScannerControllerTest {
         Test.setMock(HttpCalloutMock.class, new SearchMock());
 
         Test.startTest();
-        List<BookInfo> isbnHits = BookScannerController.searchBooks('9780306406157');
-        List<BookInfo> titleHits = BookScannerController.searchBooks('タイトル検索');
+        BookSearchService.SearchPage isbnPage = BookScannerController.searchBooks(
+            '9780306406157',
+            0,
+            null,
+            null
+        );
+        BookSearchService.SearchPage titlePage = BookScannerController.searchBooks(
+            'タイトル検索',
+            0,
+            '著者B',
+            'relevance'
+        );
         List<BookInfo> directIsbn = BookScannerController.searchByIsbn('9780306406157');
         Test.stopTest();
 
-        System.assertEquals('コントローラ本', isbnHits[0].title);
-        System.assertEquals('タイトル検索本', titleHits[0].title);
+        System.assertEquals('コントローラ本', isbnPage.books[0].title);
+        System.assertEquals(false, isbnPage.paged);
+        System.assertEquals('タイトル検索本', titlePage.books[0].title);
+        System.assertEquals(true, titlePage.paged);
         System.assertEquals('コントローラ本', directIsbn[0].title);
     }
 
